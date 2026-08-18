@@ -21,7 +21,7 @@ router.get('/:id/markdown', authMiddleware, async (req: AuthRequest, res: Respon
        LEFT JOIN article_tags at ON a.id = at.article_id
        LEFT JOIN tags t ON at.tag_id = t.id
        WHERE a.id = $1
-         AND (a.is_public = true
+         AND (a.is_private = false
               OR a.author_id = $2
               OR EXISTS (SELECT 1 FROM users WHERE id = $2 AND role = 'admin')
               OR EXISTS (SELECT 1 FROM article_permissions WHERE article_id = a.id AND user_id = $2))
@@ -78,7 +78,7 @@ router.get('/:id/html', authMiddleware, async (req: AuthRequest, res: Response) 
        LEFT JOIN article_tags at ON a.id = at.article_id
        LEFT JOIN tags t ON at.tag_id = t.id
        WHERE a.id = $1
-         AND (a.is_public = true
+         AND (a.is_private = false
               OR a.author_id = $2
               OR EXISTS (SELECT 1 FROM users WHERE id = $2 AND role = 'admin')
               OR EXISTS (SELECT 1 FROM article_permissions WHERE article_id = a.id AND user_id = $2))

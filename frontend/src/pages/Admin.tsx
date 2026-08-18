@@ -253,6 +253,20 @@ const Admin = () => {
         <button style={tabStyle('folders')} onClick={() => setTab('folders')}>Папки</button>
         <button style={tabStyle('categories')} onClick={() => setTab('categories')}>Категории</button>
         <button style={tabStyle('comments')} onClick={() => setTab('comments')}>Комментарии</button>
+        <button
+          style={{
+            padding: '0.75rem 1.5rem',
+            backgroundColor: '#F97316',
+            border: 'none',
+            borderRadius: '6px',
+            color: '#F8FAFC',
+            cursor: 'pointer',
+            fontWeight: 500
+          }}
+          onClick={() => navigate('/settings')}
+        >
+          Настройки
+        </button>
       </div>
 
       {loading && <p style={{ color: 'var(--text-muted)' }}>Загрузка...</p>}

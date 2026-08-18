@@ -14,9 +14,11 @@ import ResetPassword from './pages/ResetPassword';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import Admin from './pages/Admin';
+import AdminSettings from './pages/AdminSettings';
 import Setup from './pages/Setup';
 import Favorites from './pages/Favorites';
 import Analytics from './pages/Analytics';
+import Settings from './pages/Settings';
 import { treeService } from './services/tree';
 import { TreeNode } from './types';
 
@@ -45,10 +47,12 @@ function App() {
             <Route path="/search" element={<Search />} />
             <Route path="/favorites" element={<Favorites />} />
             <Route path="/analytics" element={<Analytics />} />
+            <Route path="/settings" element={<Settings />} />
             <Route path="/create" element={<CreateArticle />} />
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
             <Route path="/admin" element={<Admin />} />
+            <Route path="/admin/settings" element={<AdminSettings />} />
             <Route path="/setup" element={<Setup />} />
             <Route path="/forgot-password" element={<ForgotPassword />} />
             <Route path="/reset-password" element={<ResetPassword />} />

@@ -80,6 +80,17 @@ export const initializeDatabase = async () => {
       );
     `);
 
+    await query(`
+      CREATE TABLE IF NOT EXISTS system_settings (
+        id SERIAL PRIMARY KEY,
+        key VARCHAR(100) UNIQUE NOT NULL,
+        value TEXT,
+        category VARCHAR(50),
+        updated_by INTEGER REFERENCES users(id),
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      );
+    `);
+
     console.log('✓ Database initialized successfully');
   } catch (error) {
     console.error('Database initialization error:', error);

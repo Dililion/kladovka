@@ -17,6 +17,7 @@ import favoritesRoutes from './routes/favorites.js';
 import versionsRoutes from './routes/versions.js';
 import exportRoutes from './routes/export.js';
 import analyticsRoutes from './routes/analytics.js';
+import settingsRoutes from './routes/settings.js';
 
 dotenv.config();
 
@@ -61,6 +62,7 @@ app.use('/api/favorites', apiLimiter, favoritesRoutes);
 app.use('/api/versions', apiLimiter, versionsRoutes);
 app.use('/api/export', apiLimiter, exportRoutes);
 app.use('/api/analytics', apiLimiter, analyticsRoutes);
+app.use('/api/settings', apiLimiter, settingsRoutes);
 
 app.get('/health', (req, res) => {
   res.json({ status: 'ok' });

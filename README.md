@@ -1,211 +1,165 @@
 # Kladovka - Knowledge Base System
 
-![License](https://img.shields.io/badge/license-MIT-blue.svg)
-![Node](https://img.shields.io/badge/node-%3E%3D20.0.0-brightgreen.svg)
-![Docker](https://img.shields.io/badge/docker-required-blue.svg)
+Корпоративная база знаний с поддержкой LDAP аутентификации и SMTP уведомлений.
 
-Современная система управления знаниями (Knowledge Base) с поддержкой Markdown, категорий, тегов, версионирования и аналитики.
+## Возможности
 
-## 🚀 Особенности
+- 📝 Создание и редактирование статей
+- 🗂️ Организация по категориям
+- 🔍 Полнотекстовый поиск
+- 👥 Управление пользователями и ролями
+- 💬 Комментарии к статьям
+- 🏷️ Теги
+- 🔐 LDAP интеграция для корпоративной аутентификации
+- 📧 SMTP для email уведомлений
+- 📊 Аналитика и статистика для администраторов
 
-### Основные возможности
-- **Markdown редактор** с поддержкой форматирования и предпросмотра
-- **Иерархическая структура** - папки и вложенные статьи
-- **Категории и теги** для организации контента
-- **Полнотекстовый поиск** с фильтрами по автору, категориям, тегам и датам
-- **Версионирование** - автоматическое сохранение истории изменений с возможностью восстановления
-- **Права доступа** - публичные и приватные статьи
-- **Комментарии** с возможностью модерации
+## Технологический стек
 
-### Продвинутые функции
-- **Загрузка файлов** - изображения, PDF, Office документы (Word, Excel, PowerPoint), архивы (до 50MB)
-- **Избранное/Закладки** для быстрого доступа к важным статьям
-- **Экспорт** статей в Markdown и PDF форматы
-- **Аналитика** для администраторов:
-  - Статистика по статьям, пользователям, комментариям
-  - График активности за 30 дней
-  - Популярные теги и статьи
-  - Активность пользователей
-- **Админ-панель**:
-  - Управление пользователями (смена роли, блокировка)
-  - Управление статьями и комментариями
-  - Управление категориями и папками
+**Frontend:**
+- React 18 + TypeScript
+- React Router
+- Axios
+- Vite
 
-### Безопасность
+**Backend:**
+- Node.js + Express
+- TypeScript
+- PostgreSQL
 - JWT аутентификация
-- Хеширование паролей (bcrypt)
-- Восстановление пароля через email
-- Блокировка пользователей
-- Проверка прав доступа на уровне middleware
+- bcrypt для хеширования паролей
+- nodemailer для SMTP
+- ldapjs для LDAP
 
-## 🛠 Технологический стек
+**Инфраструктура:**
+- Docker + Docker Compose
+- Nginx
 
-### Backend
-- **Node.js** + **TypeScript**
-- **Express.js** - веб-фреймворк
-- **PostgreSQL** - база данных
-- **JWT** - аутентификация
-- **Multer** - загрузка файлов
-- **Nodemailer** - отправка email
-
-### Frontend
-- **React** + **TypeScript**
-- **React Router** - маршрутизация
-- **Axios** - HTTP клиент
-- **React Markdown** - рендеринг Markdown
-- **html2canvas** + **jsPDF** - экспорт в PDF
-
-### DevOps
-- **Docker** + **Docker Compose**
-- **Nginx** - reverse proxy для frontend
-- Автоматическая сборка и деплой
-
-## 📦 Установка и запуск
+## Быстрый старт
 
 ### Требования
-- Docker и Docker Compose
-- Node.js 20+ (для разработки)
 
-### Быстрый старт
+- Docker и Docker Compose
+- Node.js 20+ (для локальной разработки)
+
+### Запуск
 
 1. Клонируйте репозиторий:
 ```bash
-git clone https://github.com/YOUR_USERNAME/kladovka.git
-cd kladovka
+git clone <repository-url>
+cd kb
 ```
 
-2. Создайте файл `.env` в директории `backend`:
-```env
-DATABASE_URL=postgresql://postgres:postgres@postgres:5432/kladovka
-JWT_SECRET=your-secret-key-change-in-production
-SMTP_HOST=smtp.gmail.com
-SMTP_PORT=587
-SMTP_USER=your-email@gmail.com
-SMTP_PASS=your-app-password
-FRONTEND_URL=http://localhost
-```
-
-3. Запустите приложение:
+2. Создайте `.env` файл в директории `backend/`:
 ```bash
-./start.sh
+cp backend/.env.example backend/.env
 ```
 
-Приложение будет доступно по адресу:
-- Frontend: http://localhost
-- Backend API: http://localhost:3000
-- Health check: http://localhost:3000/health
+3. Отредактируйте `backend/.env` под ваши настройки
 
-### Остановка приложения
+4. Запустите приложение:
 ```bash
-./stop.sh
+docker-compose up -d
 ```
 
-## 🔧 Разработка
-
-### Структура проекта
-```
-kladovka/
-├── backend/              # Backend (Node.js + Express)
-│   ├── src/
-│   │   ├── routes/      # API роуты
-│   │   ├── middleware/  # Middleware (auth, rate limiting)
-│   │   ├── config/      # Конфигурация (database, email)
-│   │   └── migrations/  # SQL миграции
-│   └── Dockerfile
-├── frontend/            # Frontend (React + TypeScript)
-│   ├── src/
-│   │   ├── components/  # React компоненты
-│   │   ├── pages/       # Страницы
-│   │   ├── services/    # API сервисы
-│   │   └── types.ts     # TypeScript типы
-│   └── Dockerfile
-├── docker-compose.yml   # Docker Compose конфигурация
-├── start.sh            # Скрипт запуска
-└── stop.sh             # Скрипт остановки
+5. Инициализируйте базу данных:
+```bash
+docker-compose exec backend npm run init-db
+docker-compose exec backend npm run init-settings
 ```
 
-### Локальная разработка
+6. Приложение доступно на:
+- Frontend: http://localhost:80
+- Backend API: http://localhost:3001
 
-#### Backend
+### Первый вход
+
+По умолчанию создается администратор:
+- Email: `admin@example.com`
+- Пароль: `admin123`
+
+**⚠️ Обязательно смените пароль после первого входа!**
+
+## Разработка
+
+### Backend
+
 ```bash
 cd backend
 npm install
-npm run dev  # запуск с hot reload
+npm run dev
 ```
 
-#### Frontend
+### Frontend
+
 ```bash
 cd frontend
 npm install
-npm run dev  # запуск на http://localhost:5173
+npm run dev
 ```
 
-## 📚 API документация
+## Конфигурация
+
+### LDAP
+
+Настройки LDAP доступны в админ-панели (Настройки → LDAP):
+- LDAP сервер
+- Bind DN и пароль
+- Search Base
+- Search Filter
+- Атрибуты для username, email, name
+
+### SMTP
+
+Настройки SMTP доступны в админ-панели (Настройки → SMTP):
+- SMTP хост и порт
+- Аутентификация
+- От кого отправлять письма
+
+## Структура проекта
+
+```
+kb/
+├── backend/           # Express API
+│   ├── src/
+│   │   ├── config/   # Конфигурация БД
+│   │   ├── middleware/ # Middleware (auth)
+│   │   ├── routes/   # API endpoints
+│   │   └── scripts/  # Утилиты
+│   └── Dockerfile
+├── frontend/         # React приложение
+│   ├── src/
+│   │   ├── pages/    # Компоненты страниц
+│   │   └── App.tsx
+│   └── Dockerfile
+└── docker-compose.yml
+```
+
+## API Endpoints
 
 ### Аутентификация
-- `POST /api/auth/register` - регистрация
-- `POST /api/auth/login` - вход
-- `POST /api/auth/forgot-password` - восстановление пароля
-- `POST /api/auth/reset-password` - сброс пароля
+- `POST /api/auth/register` - Регистрация
+- `POST /api/auth/login` - Вход
 
 ### Статьи
-- `GET /api/articles` - список статей
-- `GET /api/articles/:slug` - получить статью
-- `POST /api/articles` - создать статью
-- `PUT /api/articles/:id` - обновить статью
-- `DELETE /api/articles/:id` - удалить статью
-- `GET /api/articles/:id/versions` - история версий
-- `POST /api/articles/:id/versions/:versionId/restore` - восстановить версию
+- `GET /api/articles` - Список статей
+- `GET /api/articles/:id` - Статья по ID
+- `POST /api/articles` - Создать статью
+- `PUT /api/articles/:id` - Обновить статью
+- `DELETE /api/articles/:id` - Удалить статью
 
-### Поиск
-- `GET /api/search?q=query&author=&category=&tags=&dateFrom=&dateTo=&sortBy=` - поиск с фильтрами
+### Категории
+- `GET /api/categories` - Список категорий
+- `POST /api/categories` - Создать категорию
 
-### Избранное
-- `GET /api/favorites` - список избранного
-- `POST /api/favorites` - добавить в избранное
-- `DELETE /api/favorites/:articleId` - удалить из избранного
+### Администрирование (требуется роль admin)
+- `GET /api/admin/stats` - Статистика
+- `GET /api/admin/users` - Список пользователей
+- `GET /api/settings` - Системные настройки
+- `PUT /api/settings` - Обновить настройки
+- `POST /api/settings/test-ldap` - Тест LDAP
+- `POST /api/settings/test-smtp` - Тест SMTP
 
-### Экспорт
-- `GET /api/export/:id/markdown` - экспорт в Markdown
-- `GET /api/export/:id/html` - экспорт в HTML (для PDF)
+## Лицензия
 
-### Аналитика (admin only)
-- `GET /api/analytics/stats` - общая статистика
-- `GET /api/analytics/popular-tags` - популярные теги
-- `GET /api/analytics/user-activity` - активность пользователей
-- `GET /api/analytics/popular-articles` - популярные статьи
-
-### Админ-панель (admin only)
-- `GET /api/admin/users` - список пользователей
-- `PATCH /api/admin/users/:id/role` - изменить роль
-- `PATCH /api/admin/users/:id/block` - заблокировать/разблокировать
-- `DELETE /api/admin/users/:id` - удалить пользователя
-
-## 🎨 Скриншоты
-
-<!-- Добавьте скриншоты вашего приложения -->
-
-## 🤝 Вклад в проект
-
-Приветствуются любые предложения и улучшения! 
-
-1. Fork репозиторий
-2. Создайте ветку для новой функции (`git checkout -b feature/AmazingFeature`)
-3. Commit изменения (`git commit -m 'Add some AmazingFeature'`)
-4. Push в ветку (`git push origin feature/AmazingFeature`)
-5. Откройте Pull Request
-
-## 📝 Лицензия
-
-Этот проект распространяется под лицензией MIT. См. файл `LICENSE` для подробностей.
-
-## 👤 Автор
-
-Mikhail - [@YOUR_GITHUB](https://github.com/YOUR_USERNAME)
-
-## 🙏 Благодарности
-
-- [React](https://reactjs.org/)
-- [Express.js](https://expressjs.com/)
-- [PostgreSQL](https://www.postgresql.org/)
-- [Docker](https://www.docker.com/)
+MIT

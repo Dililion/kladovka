@@ -30,7 +30,7 @@ router.get('/stats', authMiddleware, requireAdmin, async (req: AuthRequest, res:
     const stats = await pool.query(`
       SELECT
         (SELECT COUNT(*) FROM articles) as total_articles,
-        (SELECT COUNT(*) FROM articles WHERE is_public = true) as public_articles,
+        (SELECT COUNT(*) FROM articles WHERE is_private = false) as public_articles,
         (SELECT COUNT(*) FROM articles WHERE is_private = true) as private_articles,
         (SELECT COUNT(*) FROM users) as total_users,
         (SELECT COUNT(*) FROM comments) as total_comments,
@@ -99,7 +99,7 @@ router.get('/user-activity', authMiddleware, requireAdmin, async (req: AuthReque
         MAX(c.created_at) as last_comment_date
       FROM users u
       LEFT JOIN articles a ON u.id = a.author_id
-      LEFT JOIN comments c ON u.id = c.author_id
+      LEFT JOIN comments c ON u.id = a.author_id
       GROUP BY u.id, u.username, u.email, u.role
       ORDER BY articles_count DESC, comments_count DESC
       LIMIT $1
