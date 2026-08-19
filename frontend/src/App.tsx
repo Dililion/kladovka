@@ -20,6 +20,7 @@ import Favorites from './pages/Favorites';
 import Analytics from './pages/Analytics';
 import Settings from './pages/Settings';
 import ApiKeys from './pages/ApiKeys';
+import TwoFactorAuth from './pages/TwoFactorAuth';
 import { treeService } from './services/tree';
 import { TreeNode } from './types';
 
@@ -50,6 +51,7 @@ function App() {
             <Route path="/analytics" element={<Analytics />} />
             <Route path="/settings" element={<Settings />} />
             <Route path="/api-keys" element={<ApiKeys />} />
+            <Route path="/2fa" element={<TwoFactorAuth />} />
             <Route path="/create" element={<CreateArticle />} />
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />

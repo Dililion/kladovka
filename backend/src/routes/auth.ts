@@ -3,6 +3,7 @@ import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import crypto from 'crypto';
 import nodemailer from 'nodemailer';
+import { authenticator } from 'otplib';
 import { pool } from '../config/database.js';
 
 const router = Router();
@@ -67,14 +68,14 @@ router.post('/register', async (req, res) => {
 
 router.post('/login', async (req, res) => {
   try {
-    const { identifier, password } = req.body;
+    const { identifier, password, twoFactorCode, trustDevice } = req.body;
 
     if (!identifier || !password) {
       return res.status(400).json({ message: 'Логин и пароль обязательны' });
     }
 
     const result = await pool.query(
-      'SELECT id, name, email, password, role FROM users WHERE email = $1 OR name = $1',
+      'SELECT id, name, email, password, role, two_factor_enabled, two_factor_secret, two_factor_backup_codes FROM users WHERE email = $1 OR name = $1',
       [identifier]
     );
 
@@ -89,6 +90,81 @@ router.post('/login', async (req, res) => {
       return res.status(401).json({ message: 'Неверный логин или пароль' });
     }
 
+    // Проверяем 2FA если включен
+    if (user.two_factor_enabled) {
+      // Проверяем доверенное устройство
+      const deviceFingerprint = req.headers['x-device-fingerprint'] as string;
+
+      if (deviceFingerprint) {
+        const trustedDevice = await pool.query(
+          'SELECT id FROM trusted_devices WHERE user_id = $1 AND device_fingerprint = $2 AND expires_at > NOW()',
+          [user.id, deviceFingerprint]
+        );
+
+        if (trustedDevice.rows.length > 0) {
+          // Обновляем last_used_at
+          await pool.query(
+            'UPDATE trusted_devices SET last_used_at = NOW() WHERE id = $1',
+            [trustedDevice.rows[0].id]
+          );
+          // Пропускаем проверку 2FA для доверенного устройства
+        } else {
+          // Требуется 2FA код
+          if (!twoFactorCode) {
+            return res.status(403).json({
+              requiresTwoFactor: true,
+              message: 'Two-factor authentication code required'
+            });
+          }
+
+          // Проверяем 2FA код
+          const isValidCode = verifyTwoFactorCode(
+            twoFactorCode,
+            user.two_factor_secret,
+            user.two_factor_backup_codes
+          );
+
+          if (!isValidCode) {
+            return res.status(401).json({
+              message: 'Invalid two-factor authentication code'
+            });
+          }
+
+          // Если пользователь хочет доверять устройству
+          if (trustDevice && deviceFingerprint) {
+            const expiresAt = new Date();
+            expiresAt.setDate(expiresAt.getDate() + 30); // 30 дней
+
+            await pool.query(
+              `INSERT INTO trusted_devices (user_id, device_fingerprint, device_name, expires_at)
+               VALUES ($1, $2, $3, $4)`,
+              [user.id, deviceFingerprint, req.headers['user-agent'] || 'Unknown', expiresAt]
+            );
+          }
+        }
+      } else {
+        // Нет device fingerprint, требуем 2FA код
+        if (!twoFactorCode) {
+          return res.status(403).json({
+            requiresTwoFactor: true,
+            message: 'Two-factor authentication code required'
+          });
+        }
+
+        const isValidCode = verifyTwoFactorCode(
+          twoFactorCode,
+          user.two_factor_secret,
+          user.two_factor_backup_codes
+        );
+
+        if (!isValidCode) {
+          return res.status(401).json({
+            message: 'Invalid two-factor authentication code'
+          });
+        }
+      }
+    }
+
     const secret = process.env.JWT_SECRET;
     if (!secret) {
       console.error('JWT_SECRET не установлен');
@@ -99,7 +175,7 @@ router.post('/login', async (req, res) => {
       expiresIn: '30d',
     });
 
-    const { password: _, ...userWithoutPassword } = user;
+    const { password: _, two_factor_secret: __, two_factor_backup_codes: ___, ...userWithoutPassword } = user;
 
     res.json({ user: userWithoutPassword, token });
   } catch (error) {
@@ -187,5 +263,38 @@ router.post('/reset-password', async (req, res) => {
     res.status(500).json({ message: 'Ошибка сброса пароля' });
   }
 });
+
+/**
+ * Проверка 2FA кода (TOTP или backup код)
+ */
+function verifyTwoFactorCode(code: string, secret: string, backupCodesJson: string | null): boolean {
+  // Проверяем TOTP код
+  const isValidTotp = authenticator.verify({
+    token: code,
+    secret: secret
+  });
+
+  if (isValidTotp) {
+    return true;
+  }
+
+  // Проверяем backup код
+  if (backupCodesJson) {
+    try {
+      const backupCodesHashed = JSON.parse(backupCodesJson);
+      const codeHash = crypto.createHash('sha256').update(code.toUpperCase()).digest('hex');
+
+      if (backupCodesHashed.includes(codeHash)) {
+        // TODO: Пометить backup код как использованный
+        // Для этого нужно хранить backup коды с флагом "использован"
+        return true;
+      }
+    } catch (err) {
+      console.error('Error parsing backup codes:', err);
+    }
+  }
+
+  return false;
+}
 
 export default router;
