@@ -45,6 +45,18 @@
 - Docker + Docker Compose
 - Nginx
 
+## 📦 Портабельность
+
+**Kladovka может быть развернут в любой директории** на любой системе с Docker.
+
+Приложение использует только относительные пути и не зависит от места установки:
+- ✅ Работает в `/opt/kladovka`
+- ✅ Работает в `~/projects/kladovka`
+- ✅ Работает в `/var/www/kladovka`
+- ✅ Работает на Linux, macOS, Windows (WSL)
+
+➡️ **[Подробная документация по портабельности](./PORTABILITY.md)**
+
 ## Быстрый старт
 
 ### Требования
@@ -54,10 +66,10 @@
 
 ### Запуск
 
-1. Клонируйте репозиторий:
+1. Клонируйте репозиторий в любую директорию:
 ```bash
-git clone <repository-url>
-cd kb
+git clone https://github.com/Dililion/kladovka.git
+cd kladovka
 ```
 
 2. Создайте `.env` файл в директории `backend/`:

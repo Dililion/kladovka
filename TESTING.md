@@ -5,7 +5,7 @@
 ### 1. Применение миграций
 
 ```bash
-cd /home/mikhail/work/kb/backend
+cd backend
 npm run migrate
 ```
 
@@ -24,7 +24,7 @@ npm run migrate
 ### 2. Перезапуск приложения
 
 ```bash
-cd /home/mikhail/work/kb
+cd ..
 docker-compose down
 docker-compose up -d
 ```
