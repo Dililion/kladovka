@@ -9,12 +9,6 @@ interface TwoFactorSetup {
   message: string;
 }
 
-interface BackupCodesResponse {
-  backupCodes: string[];
-  message: string;
-  warning?: string;
-}
-
 const TwoFactorAuth = () => {
   const [enabled, setEnabled] = useState(false);
   const [loading, setLoading] = useState(true);

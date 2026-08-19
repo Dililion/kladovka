@@ -89,7 +89,7 @@ const RolesManagement = () => {
     }
   };
 
-  const getPermissionLabel = (resource: string, action: string, value: any): string => {
+  const getPermissionLabel = (_resource: string, _action: string, value: any): string => {
     if (value === true) return '✅';
     if (value === false) return '❌';
     if (value === 'own') return '👤'; // Только свои
