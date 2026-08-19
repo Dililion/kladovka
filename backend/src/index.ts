@@ -25,6 +25,7 @@ import apiV1Routes from './routes/api-v1.js';
 import twoFactorRoutes from './routes/two-factor.js';
 import rolesRoutes from './routes/roles.js';
 import importExportRoutes from './routes/import-export.js';
+import backupsRoutes from './routes/backups.js';
 
 dotenv.config();
 
@@ -78,6 +79,7 @@ app.use('/api/2fa', apiLimiter, twoFactorRoutes);
 app.use('/api/roles', apiLimiter, rolesRoutes);
 app.use('/api/export', apiLimiter, importExportRoutes);
 app.use('/api/import', apiLimiter, importExportRoutes);
+app.use('/api/backups', apiLimiter, backupsRoutes);
 
 app.get('/health', (req, res) => {
   res.json({ status: 'ok' });
