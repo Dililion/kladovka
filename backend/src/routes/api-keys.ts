@@ -1,6 +1,6 @@
 import { Router, Request, Response } from 'express';
-import { auth } from '../middleware/auth';
-import pool from '../config/database';
+import { authMiddleware } from '../middleware/auth';
+import { pool } from '../config/database';
 import { generateApiKey, hashApiKey, getKeyPrefix } from '../middleware/apiAuth';
 
 const router = Router();
@@ -14,7 +14,7 @@ interface AuthRequest extends Request {
  * GET /api/user/api-keys
  * Получить список API ключей пользователя
  */
-router.get('/user/api-keys', auth, async (req: AuthRequest, res: Response) => {
+router.get('/user/api-keys', authMiddleware, async (req: AuthRequest, res: Response) => {
   try {
     const userId = req.userId;
 
@@ -37,7 +37,7 @@ router.get('/user/api-keys', auth, async (req: AuthRequest, res: Response) => {
  * POST /api/user/api-keys
  * Создать новый API ключ
  */
-router.post('/user/api-keys', auth, async (req: AuthRequest, res: Response) => {
+router.post('/user/api-keys', authMiddleware, async (req: AuthRequest, res: Response) => {
   try {
     const userId = req.userId;
     const { name, expiresInDays } = req.body;
@@ -99,7 +99,7 @@ router.post('/user/api-keys', auth, async (req: AuthRequest, res: Response) => {
  * DELETE /api/user/api-keys/:id
  * Удалить (деактивировать) API ключ
  */
-router.delete('/user/api-keys/:id', auth, async (req: AuthRequest, res: Response) => {
+router.delete('/user/api-keys/:id', authMiddleware, async (req: AuthRequest, res: Response) => {
   try {
     const userId = req.userId;
     const keyId = parseInt(req.params.id);
@@ -129,7 +129,7 @@ router.delete('/user/api-keys/:id', auth, async (req: AuthRequest, res: Response
  * GET /api/user/api-keys/:id/usage
  * Статистика использования API ключа
  */
-router.get('/user/api-keys/:id/usage', auth, async (req: AuthRequest, res: Response) => {
+router.get('/user/api-keys/:id/usage', authMiddleware, async (req: AuthRequest, res: Response) => {
   try {
     const userId = req.userId;
     const keyId = parseInt(req.params.id);

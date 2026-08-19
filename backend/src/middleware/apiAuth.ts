@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import crypto from 'crypto';
-import pool from '../config/database';
+import { pool } from '../config/database';
 
 interface ApiKeyRequest extends Request {
   apiKey?: {
@@ -80,7 +80,7 @@ export const apiAuth = async (req: ApiKeyRequest, res: Response, next: NextFunct
     pool.query(
       'UPDATE api_keys SET last_used_at = CURRENT_TIMESTAMP WHERE id = $1',
       [keyData.id]
-    ).catch(err => console.error('Error updating last_used_at:', err));
+    ).catch((err: any) => console.error('Error updating last_used_at:', err));
 
     // Логируем использование API (async, не ждем)
     logApiUsage(keyData.id, req).catch(err => console.error('Error logging API usage:', err));

@@ -1,6 +1,6 @@
 import { Router, Request, Response } from 'express';
 import { apiAuth } from '../middleware/apiAuth';
-import pool from '../config/database';
+import { pool } from '../config/database';
 
 const router = Router();
 
@@ -107,7 +107,7 @@ router.get('/articles/:id', apiAuth, async (req: ApiRequest, res: Response) => {
 
     // Инкрементируем счетчик просмотров (async)
     pool.query('UPDATE articles SET views = views + 1 WHERE id = $1', [articleId])
-      .catch(err => console.error('Error updating views:', err));
+      .catch((err: any) => console.error('Error updating views:', err));
 
     res.json(result.rows[0]);
   } catch (error) {
