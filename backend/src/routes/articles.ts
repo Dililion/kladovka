@@ -353,7 +353,7 @@ router.post('/', authMiddleware, async (req: AuthRequest, res) => {
     // Log audit
     const user = await pool.query('SELECT name FROM users WHERE id = $1', [req.userId]);
     await logAudit(
-      req.userId,
+      req.userId?.toString(),
       user.rows[0]?.name,
       'create_article',
       'article',
@@ -456,7 +456,7 @@ router.put('/:id', authMiddleware, async (req: AuthRequest, res) => {
     // Log audit
     const user = await pool.query('SELECT name FROM users WHERE id = $1', [req.userId]);
     await logAudit(
-      req.userId,
+      req.userId?.toString(),
       user.rows[0]?.name,
       'update_article',
       'article',
@@ -467,7 +467,7 @@ router.put('/:id', authMiddleware, async (req: AuthRequest, res) => {
 
     // Notify subscribers about update
     if (status === 'published') {
-      await notificationService.notifyArticleUpdate(id, title, req.userId!);
+      await notificationService.notifyArticleUpdate(id, title, req.userId!.toString());
     }
 
     res.json(updated.rows[0]);
@@ -499,7 +499,7 @@ router.delete('/:id', authMiddleware, async (req: AuthRequest, res) => {
 
     // Log audit
     await logAudit(
-      req.userId,
+      req.userId?.toString(),
       userResult2.rows[0]?.name,
       'delete_article',
       'article',

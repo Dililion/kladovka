@@ -2,8 +2,6 @@ import { Router, Request, Response } from 'express';
 import { authMiddleware } from '../middleware/auth';
 import { checkPermission } from '../middleware/permissions';
 import { pool } from '../config/database';
-import archiver from 'archiver';
-import { Readable } from 'stream';
 
 const router = Router();
 

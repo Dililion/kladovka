@@ -12,12 +12,12 @@ router.get('/', authMiddleware, async (req: AuthRequest, res) => {
     const offset = (page - 1) * limit;
 
     const notifications = await notificationService.getUserNotifications(
-      req.userId!,
+      req.userId!.toString(),
       limit,
       offset
     );
 
-    const unreadCount = await notificationService.getUnreadCount(req.userId!);
+    const unreadCount = await notificationService.getUnreadCount(req.userId!.toString());
 
     res.json({
       notifications,
@@ -36,7 +36,7 @@ router.get('/', authMiddleware, async (req: AuthRequest, res) => {
 // Get unread count
 router.get('/unread-count', authMiddleware, async (req: AuthRequest, res) => {
   try {
-    const count = await notificationService.getUnreadCount(req.userId!);
+    const count = await notificationService.getUnreadCount(req.userId!.toString());
     res.json({ count });
   } catch (error) {
     console.error('Get unread count error:', error);
@@ -48,7 +48,7 @@ router.get('/unread-count', authMiddleware, async (req: AuthRequest, res) => {
 router.put('/:id/read', authMiddleware, async (req: AuthRequest, res) => {
   try {
     const notificationId = parseInt(req.params.id);
-    await notificationService.markAsRead(notificationId, req.userId!);
+    await notificationService.markAsRead(notificationId, req.userId!.toString());
     res.json({ message: 'Уведомление отмечено как прочитанное' });
   } catch (error) {
     console.error('Mark as read error:', error);
@@ -59,7 +59,7 @@ router.put('/:id/read', authMiddleware, async (req: AuthRequest, res) => {
 // Mark all as read
 router.put('/read-all', authMiddleware, async (req: AuthRequest, res) => {
   try {
-    await notificationService.markAllAsRead(req.userId!);
+    await notificationService.markAllAsRead(req.userId!.toString());
     res.json({ message: 'Все уведомления отмечены как прочитанные' });
   } catch (error) {
     console.error('Mark all as read error:', error);
@@ -71,7 +71,7 @@ router.put('/read-all', authMiddleware, async (req: AuthRequest, res) => {
 router.post('/subscribe/:articleId', authMiddleware, async (req: AuthRequest, res) => {
   try {
     const { articleId } = req.params;
-    await notificationService.subscribeToArticle(req.userId!, articleId);
+    await notificationService.subscribeToArticle(req.userId!.toString(), articleId);
     res.json({ message: 'Подписка оформлена' });
   } catch (error) {
     console.error('Subscribe error:', error);
@@ -83,7 +83,7 @@ router.post('/subscribe/:articleId', authMiddleware, async (req: AuthRequest, re
 router.delete('/subscribe/:articleId', authMiddleware, async (req: AuthRequest, res) => {
   try {
     const { articleId } = req.params;
-    await notificationService.unsubscribeFromArticle(req.userId!, articleId);
+    await notificationService.unsubscribeFromArticle(req.userId!.toString(), articleId);
     res.json({ message: 'Подписка отменена' });
   } catch (error) {
     console.error('Unsubscribe error:', error);
@@ -95,7 +95,7 @@ router.delete('/subscribe/:articleId', authMiddleware, async (req: AuthRequest, 
 router.get('/subscribe/:articleId', authMiddleware, async (req: AuthRequest, res) => {
   try {
     const { articleId } = req.params;
-    const isSubscribed = await notificationService.isSubscribed(req.userId!, articleId);
+    const isSubscribed = await notificationService.isSubscribed(req.userId!.toString(), articleId);
     res.json({ isSubscribed });
   } catch (error) {
     console.error('Check subscription error:', error);
