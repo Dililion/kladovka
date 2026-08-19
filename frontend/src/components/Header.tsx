@@ -104,6 +104,9 @@ const Header = () => {
               <Link to="/favorites" style={{ color: 'var(--text-primary)', textDecoration: 'none', fontWeight: 500, fontSize: '0.9rem' }}>
                 ★ Избранное
               </Link>
+              <Link to="/api-keys" style={{ color: 'var(--text-primary)', textDecoration: 'none', fontWeight: 500, fontSize: '0.9rem' }}>
+                🔑 API
+              </Link>
               <Link to="/create" className="btn btn-primary">
                 Создать статью
               </Link>

@@ -20,6 +20,8 @@ import analyticsRoutes from './routes/analytics.js';
 import settingsRoutes from './routes/settings.js';
 import notificationsRoutes from './routes/notifications.js';
 import auditRoutes from './routes/audit.js';
+import apiKeysRoutes from './routes/api-keys.js';
+import apiV1Routes from './routes/api-v1.js';
 
 dotenv.config();
 
@@ -67,6 +69,8 @@ app.use('/api/analytics', apiLimiter, analyticsRoutes);
 app.use('/api/settings', apiLimiter, settingsRoutes);
 app.use('/api/notifications', apiLimiter, notificationsRoutes);
 app.use('/api/audit', apiLimiter, auditRoutes);
+app.use('/api', apiLimiter, apiKeysRoutes);
+app.use('/api/v1', apiLimiter, apiV1Routes);
 
 app.get('/health', (req, res) => {
   res.json({ status: 'ok' });
