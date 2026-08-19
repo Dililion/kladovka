@@ -4,6 +4,8 @@ import { articlesService } from '../services/articles';
 import { categoriesService } from '../services/categories';
 import { Category } from '../types';
 import FileUpload from '../components/FileUpload';
+import MarkdownEditor from '../components/MarkdownEditor';
+import '../markdown-preview.css';
 
 const CreateArticle = () => {
   const navigate = useNavigate();
@@ -133,17 +135,12 @@ const CreateArticle = () => {
           <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 500 }}>
             Содержание (Markdown) <span style={{ color: 'var(--error)' }}>*</span>
           </label>
-          <textarea
-            className="input textarea"
-            style={{ minHeight: '400px', fontFamily: 'monospace' }}
+          <MarkdownEditor
             value={formData.content}
-            onChange={(e) => setFormData({ ...formData, content: e.target.value })}
-            required
+            onChange={(content) => setFormData({ ...formData, content })}
             placeholder="# Заголовок&#10;&#10;Текст статьи в формате Markdown..."
+            minHeight="500px"
           />
-          <p style={{ marginTop: '0.5rem', fontSize: '0.85rem', color: 'var(--text-muted)' }}>
-            Поддерживается Markdown: # заголовки, **жирный**, *курсив*, [ссылки](url), ``` код ```
-          </p>
         </div>
 
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem', marginBottom: '1.5rem' }}>

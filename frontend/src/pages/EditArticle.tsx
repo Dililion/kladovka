@@ -3,6 +3,8 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { articlesService } from '../services/articles';
 import { Article } from '../types';
 import FileUpload from '../components/FileUpload';
+import MarkdownEditor from '../components/MarkdownEditor';
+import '../markdown-preview.css';
 
 const EditArticle = () => {
   const { id } = useParams<{ id: string }>();
@@ -135,12 +137,10 @@ const EditArticle = () => {
           <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 500 }}>
             Содержание (Markdown) <span style={{ color: 'var(--error)' }}>*</span>
           </label>
-          <textarea
-            className="input"
-            style={{ minHeight: '400px', fontFamily: 'monospace', resize: 'vertical' }}
+          <MarkdownEditor
             value={formData.content}
-            onChange={(e) => setFormData({ ...formData, content: e.target.value })}
-            required
+            onChange={(content) => setFormData({ ...formData, content })}
+            minHeight="500px"
           />
         </div>
 

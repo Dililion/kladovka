@@ -2,6 +2,8 @@ import { Router } from 'express';
 import slugify from 'slugify';
 import { pool } from '../config/database.js';
 import { authMiddleware, optionalAuth, AuthRequest } from '../middleware/auth.js';
+import { logAudit } from '../middleware/audit.js';
+import { notificationService } from '../services/notifications.js';
 
 const router = Router();
 
@@ -108,13 +110,12 @@ router.get('/search', async (req, res) => {
     const params: any[] = [];
     const conditions: string[] = ["a.status = 'published'"];
 
-    // Текстовый поиск (опциональный)
+    // Текстовый поиск (используем полнотекстовый поиск PostgreSQL)
     if (query) {
-      params.push(`%${query}%`);
+      // Используем to_tsquery для поиска по русскому языку
+      params.push(query);
       conditions.push(`(
-        a.title ILIKE $${params.length}
-        OR a.excerpt ILIKE $${params.length}
-        OR a.content ILIKE $${params.length}
+        search_vector @@ plainto_tsquery('russian', $${params.length})
       )`);
     }
 
@@ -160,7 +161,10 @@ router.get('/search', async (req, res) => {
 
     // Сортировка
     let orderBy = 'a.created_at DESC';
-    if (sortBy === 'popularity') {
+    if (query) {
+      // Если есть поисковый запрос, сортируем по релевантности
+      orderBy = `ts_rank(search_vector, plainto_tsquery('russian', $1)) DESC, a.created_at DESC`;
+    } else if (sortBy === 'popularity') {
       orderBy = `a.views_count ${sortOrder.toUpperCase()}, a.created_at DESC`;
     } else if (sortBy === 'title') {
       orderBy = `a.title ${sortOrder.toUpperCase()}`;
@@ -178,13 +182,15 @@ router.get('/search', async (req, res) => {
           json_agg(DISTINCT t.name) FILTER (WHERE t.name IS NOT NULL),
           '[]'
         ) as tags
+        ${query ? `, ts_rank(search_vector, plainto_tsquery('russian', $1)) as rank,
+        ts_headline('russian', a.content, plainto_tsquery('russian', $1), 'MaxWords=30, MinWords=15, ShortWord=3, MaxFragments=2') as highlight` : ''}
       FROM articles a
       LEFT JOIN users u ON a.author_id = u.id
       LEFT JOIN categories c ON a.category_id = c.id
       LEFT JOIN article_tags at ON a.id = at.article_id
       LEFT JOIN tags t ON at.tag_id = t.id
       WHERE ${conditions.join(' AND ')}
-      GROUP BY a.id, u.name, c.name
+      GROUP BY a.id, u.name, c.name${query ? ', a.search_vector' : ''}
       ORDER BY ${orderBy}
       LIMIT $${params.length + 1} OFFSET $${params.length + 2}
     `;
@@ -344,6 +350,18 @@ router.post('/', authMiddleware, async (req: AuthRequest, res) => {
       [article.id]
     );
 
+    // Log audit
+    const user = await pool.query('SELECT name FROM users WHERE id = $1', [req.userId]);
+    await logAudit(
+      req.userId,
+      user.rows[0]?.name,
+      'create_article',
+      'article',
+      article.id.toString(),
+      { title, status: status || 'draft' },
+      req
+    );
+
     res.status(201).json(fullArticle.rows[0]);
   } catch (error) {
     console.error('Create article error:', error);
@@ -435,6 +453,23 @@ router.put('/:id', authMiddleware, async (req: AuthRequest, res) => {
       [id]
     );
 
+    // Log audit
+    const user = await pool.query('SELECT name FROM users WHERE id = $1', [req.userId]);
+    await logAudit(
+      req.userId,
+      user.rows[0]?.name,
+      'update_article',
+      'article',
+      id,
+      { title, status: status || 'draft' },
+      req
+    );
+
+    // Notify subscribers about update
+    if (status === 'published') {
+      await notificationService.notifyArticleUpdate(id, title, req.userId!);
+    }
+
     res.json(updated.rows[0]);
   } catch (error) {
     console.error('Update article error:', error);
@@ -446,13 +481,13 @@ router.delete('/:id', authMiddleware, async (req: AuthRequest, res) => {
   try {
     const { id } = req.params;
 
-    const article = await pool.query('SELECT author_id FROM articles WHERE id = $1', [id]);
+    const article = await pool.query('SELECT author_id, title FROM articles WHERE id = $1', [id]);
 
     if (article.rows.length === 0) {
       return res.status(404).json({ message: 'Статья не найдена' });
     }
 
-    const userResult2 = await pool.query('SELECT role FROM users WHERE id = $1', [req.userId]);
+    const userResult2 = await pool.query('SELECT role, name FROM users WHERE id = $1', [req.userId]);
     const isAdmin2 = userResult2.rows[0]?.role === 'admin';
 
     if (article.rows[0].author_id !== req.userId && !isAdmin2) {
@@ -461,6 +496,17 @@ router.delete('/:id', authMiddleware, async (req: AuthRequest, res) => {
 
     await pool.query('DELETE FROM article_tags WHERE article_id = $1', [id]);
     await pool.query('DELETE FROM articles WHERE id = $1', [id]);
+
+    // Log audit
+    await logAudit(
+      req.userId,
+      userResult2.rows[0]?.name,
+      'delete_article',
+      'article',
+      id,
+      { title: article.rows[0].title },
+      req
+    );
 
     res.json({ message: 'Статья удалена' });
   } catch (error) {
