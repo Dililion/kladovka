@@ -124,6 +124,9 @@ const Header = () => {
                   <Link to="/roles" style={{ color: '#F97316', textDecoration: 'none', fontWeight: 500, fontSize: '0.9rem' }}>
                     👥 Роли
                   </Link>
+                  <Link to="/import-export" style={{ color: '#F97316', textDecoration: 'none', fontWeight: 500, fontSize: '0.9rem' }}>
+                    📦 Импорт/Экспорт
+                  </Link>
                 </>
               )}
               <span style={{ color: 'var(--text-secondary)', fontSize: '0.9rem' }}>
