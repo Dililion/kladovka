@@ -121,6 +121,9 @@ const Header = () => {
                   <Link to="/analytics" style={{ color: '#F97316', textDecoration: 'none', fontWeight: 500, fontSize: '0.9rem' }}>
                     📊 Аналитика
                   </Link>
+                  <Link to="/roles" style={{ color: '#F97316', textDecoration: 'none', fontWeight: 500, fontSize: '0.9rem' }}>
+                    👥 Роли
+                  </Link>
                 </>
               )}
               <span style={{ color: 'var(--text-secondary)', fontSize: '0.9rem' }}>

@@ -23,6 +23,7 @@ import auditRoutes from './routes/audit.js';
 import apiKeysRoutes from './routes/api-keys.js';
 import apiV1Routes from './routes/api-v1.js';
 import twoFactorRoutes from './routes/two-factor.js';
+import rolesRoutes from './routes/roles.js';
 
 dotenv.config();
 
@@ -73,6 +74,7 @@ app.use('/api/audit', apiLimiter, auditRoutes);
 app.use('/api', apiLimiter, apiKeysRoutes);
 app.use('/api/v1', apiLimiter, apiV1Routes);
 app.use('/api/2fa', apiLimiter, twoFactorRoutes);
+app.use('/api/roles', apiLimiter, rolesRoutes);
 
 app.get('/health', (req, res) => {
   res.json({ status: 'ok' });
