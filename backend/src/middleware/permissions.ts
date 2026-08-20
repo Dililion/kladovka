@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
-import { pool } from '../config/database';
+import { pool } from '../config/database.js';
 
 interface PermissionRequest extends Request {
   userId?: number;

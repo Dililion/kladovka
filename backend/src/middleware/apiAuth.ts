@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import crypto from 'crypto';
-import { pool } from '../config/database';
+import { pool } from '../config/database.js';
 
 interface ApiKeyRequest extends Request {
   apiKey?: {
