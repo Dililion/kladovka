@@ -1,7 +1,7 @@
 import { Router, Request, Response } from 'express';
-import { authMiddleware } from '../middleware/auth';
-import { checkPermission, getUserPermissions } from '../middleware/permissions';
-import { pool } from '../config/database';
+import { authMiddleware } from '../middleware/auth.js';
+import { checkPermission, getUserPermissions } from '../middleware/permissions.js';
+import { pool } from '../config/database.js';
 
 const router = Router();
 

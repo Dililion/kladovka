@@ -2,8 +2,8 @@ import { Router, Request, Response } from 'express';
 import { authenticator } from 'otplib';
 import QRCode from 'qrcode';
 import crypto from 'crypto';
-import { authMiddleware } from '../middleware/auth';
-import { pool } from '../config/database';
+import { authMiddleware } from '../middleware/auth.js';
+import { pool } from '../config/database.js';
 
 const router = Router();
 
