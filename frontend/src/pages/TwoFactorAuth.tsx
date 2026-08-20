@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import axios from 'axios';
+import { api } from '../services/api';
 import { useNavigate } from 'react-router-dom';
 
 interface TwoFactorSetup {
@@ -20,8 +20,6 @@ const TwoFactorAuth = () => {
   const [success, setSuccess] = useState('');
   const navigate = useNavigate();
 
-  const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001';
-
   useEffect(() => {
     checkStatus();
   }, []);
@@ -34,9 +32,7 @@ const TwoFactorAuth = () => {
         return;
       }
 
-      const response = await axios.get(`${API_URL}/api/2fa/status`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+      const response = await api.get('/2fa/status');
 
       setEnabled(response.data.enabled);
       setLoading(false);
@@ -50,10 +46,7 @@ const TwoFactorAuth = () => {
     setError('');
     setSuccess('');
     try {
-      const token = localStorage.getItem('token');
-      const response = await axios.get(`${API_URL}/api/2fa/setup`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+      const response = await api.get('/2fa/setup');
 
       setSetup(response.data);
     } catch (err: any) {
@@ -72,12 +65,7 @@ const TwoFactorAuth = () => {
     }
 
     try {
-      const token = localStorage.getItem('token');
-      const response = await axios.post(
-        `${API_URL}/api/2fa/verify`,
-        { code: verificationCode },
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
+      const response = await api.post('/2fa/verify', { code: verificationCode });
 
       setBackupCodes(response.data.backupCodes);
       setSuccess(response.data.message);
@@ -100,12 +88,7 @@ const TwoFactorAuth = () => {
     }
 
     try {
-      const token = localStorage.getItem('token');
-      await axios.post(
-        `${API_URL}/api/2fa/disable`,
-        { code: disableCode },
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
+      await api.post('/2fa/disable', { code: disableCode });
 
       setSuccess('2FA успешно отключен');
       setDisableCode('');

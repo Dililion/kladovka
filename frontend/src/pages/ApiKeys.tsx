@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import axios from 'axios';
+import { api } from '../services/api';
 import { useNavigate } from 'react-router-dom';
 
 interface ApiKey {
@@ -41,9 +41,7 @@ const ApiKeys = () => {
         return;
       }
 
-      const response = await axios.get(`${API_URL}/api/user/api-keys`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+      const response = await api.get('/user/api-keys');
 
       setKeys(response.data);
       setLoading(false);
@@ -63,17 +61,10 @@ const ApiKeys = () => {
     }
 
     try {
-      const token = localStorage.getItem('token');
-      const response = await axios.post(
-        `${API_URL}/api/user/api-keys`,
-        {
-          name: newKeyName.trim(),
-          expiresInDays: expiresInDays || null
-        },
-        {
-          headers: { Authorization: `Bearer ${token}` }
-        }
-      );
+      const response = await api.post('/user/api-keys', {
+        name: newKeyName.trim(),
+        expiresInDays: expiresInDays || null
+      });
 
       setCreatedKey(response.data);
       setNewKeyName('');
@@ -91,10 +82,7 @@ const ApiKeys = () => {
     }
 
     try {
-      const token = localStorage.getItem('token');
-      await axios.delete(`${API_URL}/api/user/api-keys/${id}`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+      await api.delete(`/user/api-keys/${id}`);
 
       fetchApiKeys();
     } catch (err: any) {

@@ -4,6 +4,7 @@ import { pool } from '../config/database.js';
 
 export interface AuthRequest extends Request {
   userId?: number;
+  userRole?: string;
 }
 
 export const authMiddleware = async (req: AuthRequest, res: Response, next: NextFunction) => {
@@ -23,7 +24,7 @@ export const authMiddleware = async (req: AuthRequest, res: Response, next: Next
     const decoded = jwt.verify(token, secret) as { userId: number };
 
     // Проверить, не заблокирован ли пользователь
-    const userResult = await pool.query('SELECT is_blocked FROM users WHERE id = $1', [decoded.userId]);
+    const userResult = await pool.query('SELECT is_blocked, role FROM users WHERE id = $1', [decoded.userId]);
 
     if (userResult.rows.length === 0) {
       return res.status(401).json({ message: 'Пользователь не найден' });
@@ -34,6 +35,7 @@ export const authMiddleware = async (req: AuthRequest, res: Response, next: Next
     }
 
     req.userId = decoded.userId;
+    req.userRole = userResult.rows[0].role;
     next();
   } catch (error) {
     return res.status(401).json({ message: 'Недействительный токен' });

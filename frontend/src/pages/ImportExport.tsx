@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import axios from 'axios';
+import { api } from '../services/api';
 import { useNavigate } from 'react-router-dom';
 
 const ImportExport = () => {
@@ -9,8 +9,6 @@ const ImportExport = () => {
   const [importMode, setImportMode] = useState<'append' | 'replace'>('append');
   const [importFile, setImportFile] = useState<File | null>(null);
   const navigate = useNavigate();
-
-  const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001';
 
   const handleExport = async (type: 'articles' | 'categories' | 'full') => {
     setLoading(true);
@@ -24,8 +22,7 @@ const ImportExport = () => {
         return;
       }
 
-      const response = await axios.get(`${API_URL}/api/export/${type}`, {
-        headers: { Authorization: `Bearer ${token}` },
+      const response = await api.get(`/export/${type}`, {
         responseType: 'blob'
       });
 
@@ -83,14 +80,11 @@ const ImportExport = () => {
         return;
       }
 
-      const response = await axios.post(
-        `${API_URL}/api/import/${type}`,
+      const response = await api.post(
+        `/import/${type}`,
         {
           data: jsonData.data,
           mode: importMode
-        },
-        {
-          headers: { Authorization: `Bearer ${token}` }
         }
       );
 

@@ -21,9 +21,6 @@ import Analytics from './pages/Analytics';
 import Settings from './pages/Settings';
 import ApiKeys from './pages/ApiKeys';
 import TwoFactorAuth from './pages/TwoFactorAuth';
-import RolesManagement from './pages/RolesManagement';
-import ImportExport from './pages/ImportExport';
-import BackupManagement from './pages/BackupManagement';
 import { treeService } from './services/tree';
 import { TreeNode } from './types';
 
@@ -55,9 +52,6 @@ function App() {
             <Route path="/settings" element={<Settings />} />
             <Route path="/api-keys" element={<ApiKeys />} />
             <Route path="/2fa" element={<TwoFactorAuth />} />
-            <Route path="/roles" element={<RolesManagement />} />
-            <Route path="/import-export" element={<ImportExport />} />
-            <Route path="/backups" element={<BackupManagement />} />
             <Route path="/create" element={<CreateArticle />} />
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />

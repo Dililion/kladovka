@@ -1,6 +1,9 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { api } from '../services/api';
+import RolesManagement from './RolesManagement';
+import BackupManagement from './BackupManagement';
+import ImportExport from './ImportExport';
 
 interface AdminStats {
   users: number;
@@ -57,7 +60,7 @@ interface Category {
   created_at: string;
 }
 
-type Tab = 'stats' | 'users' | 'articles' | 'folders' | 'categories' | 'comments';
+type Tab = 'stats' | 'users' | 'articles' | 'folders' | 'categories' | 'comments' | 'roles' | 'backups' | 'import-export';
 
 const Admin = () => {
   const navigate = useNavigate();
@@ -253,6 +256,9 @@ const Admin = () => {
         <button style={tabStyle('folders')} onClick={() => setTab('folders')}>Папки</button>
         <button style={tabStyle('categories')} onClick={() => setTab('categories')}>Категории</button>
         <button style={tabStyle('comments')} onClick={() => setTab('comments')}>Комментарии</button>
+        <button style={tabStyle('roles')} onClick={() => setTab('roles')}>Роли</button>
+        <button style={tabStyle('backups')} onClick={() => setTab('backups')}>Бэкапы</button>
+        <button style={tabStyle('import-export')} onClick={() => setTab('import-export')}>Импорт/Экспорт</button>
         <button
           style={{
             padding: '0.75rem 1.5rem',
@@ -665,6 +671,15 @@ const Admin = () => {
           </table>
         </div>
       )}
+
+      {/* Roles */}
+      {tab === 'roles' && <RolesManagement />}
+
+      {/* Backups */}
+      {tab === 'backups' && <BackupManagement />}
+
+      {/* Import/Export */}
+      {tab === 'import-export' && <ImportExport />}
     </div>
   );
 };

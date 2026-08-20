@@ -116,19 +116,10 @@ const Header = () => {
               {user?.role === 'admin' && (
                 <>
                   <Link to="/admin" style={{ color: '#F97316', textDecoration: 'none', fontWeight: 500, fontSize: '0.9rem' }}>
-                    Админ
+                    ⚙️ Админ
                   </Link>
                   <Link to="/analytics" style={{ color: '#F97316', textDecoration: 'none', fontWeight: 500, fontSize: '0.9rem' }}>
                     📊 Аналитика
-                  </Link>
-                  <Link to="/roles" style={{ color: '#F97316', textDecoration: 'none', fontWeight: 500, fontSize: '0.9rem' }}>
-                    👥 Роли
-                  </Link>
-                  <Link to="/import-export" style={{ color: '#F97316', textDecoration: 'none', fontWeight: 500, fontSize: '0.9rem' }}>
-                    📦 Импорт/Экспорт
-                  </Link>
-                  <Link to="/backups" style={{ color: '#F97316', textDecoration: 'none', fontWeight: 500, fontSize: '0.9rem' }}>
-                    💾 Бэкапы
                   </Link>
                 </>
               )}

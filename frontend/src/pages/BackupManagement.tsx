@@ -1,7 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
-
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+import { api } from '../services/api';
 
 interface Backup {
   id: number;
@@ -47,10 +45,7 @@ const BackupManagement: React.FC = () => {
 
   const loadBackups = async () => {
     try {
-      const token = localStorage.getItem('token');
-      const response = await axios.get(`${API_URL}/api/backups`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const response = await api.get('/backups');
       setBackups(response.data);
     } catch (error) {
       console.error('Error loading backups:', error);
@@ -60,10 +55,7 @@ const BackupManagement: React.FC = () => {
 
   const loadSettings = async () => {
     try {
-      const token = localStorage.getItem('token');
-      const response = await axios.get(`${API_URL}/api/backups/settings`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const response = await api.get('/backups/settings');
       setSettings(response.data);
     } catch (error) {
       console.error('Error loading settings:', error);
@@ -73,12 +65,7 @@ const BackupManagement: React.FC = () => {
   const createBackup = async (type: string) => {
     setLoading(true);
     try {
-      const token = localStorage.getItem('token');
-      const response = await axios.post(
-        `${API_URL}/api/backups`,
-        { type },
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
+      const response = await api.post('/backups', { type });
       showMessage('success', `Backup creation started: ${response.data.filename}`);
       setTimeout(loadBackups, 2000); // Обновим список через 2 секунды
     } catch (error) {
@@ -93,10 +80,7 @@ const BackupManagement: React.FC = () => {
     if (!confirm('Are you sure you want to delete this backup?')) return;
 
     try {
-      const token = localStorage.getItem('token');
-      await axios.delete(`${API_URL}/api/backups/${id}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      await api.delete(`/backups/${id}`);
       showMessage('success', 'Backup deleted successfully');
       loadBackups();
     } catch (error) {
@@ -108,10 +92,7 @@ const BackupManagement: React.FC = () => {
   const updateSettings = async () => {
     setLoading(true);
     try {
-      const token = localStorage.getItem('token');
-      await axios.put(`${API_URL}/api/backups/settings`, settings, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      await api.put('/backups/settings', settings);
       showMessage('success', 'Settings updated successfully');
       loadSettings();
     } catch (error) {
@@ -127,10 +108,7 @@ const BackupManagement: React.FC = () => {
 
     setLoading(true);
     try {
-      const token = localStorage.getItem('token');
-      const response = await axios.post(`${API_URL}/api/backups/cleanup`, {}, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const response = await api.post('/backups/cleanup', {});
       showMessage('success', `Cleanup completed: ${response.data.deleted} backups deleted`);
       loadBackups();
     } catch (error) {

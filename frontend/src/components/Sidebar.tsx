@@ -253,6 +253,15 @@ const Sidebar = ({ tree, onTreeChange }: SidebarProps) => {
             >
               +📁
             </button>
+            {isAdmin && (
+              <Link
+                to="/admin"
+                title="Админка"
+                style={{ fontSize: '1rem', color: 'var(--text-muted)', textDecoration: 'none', padding: '0.15rem 0.3rem' }}
+              >
+                ⚙️
+              </Link>
+            )}
           </div>
         )}
       </div>

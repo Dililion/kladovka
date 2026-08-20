@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import axios from 'axios';
+import { api } from '../services/api';
 import { useNavigate } from 'react-router-dom';
 
 interface Role {
@@ -28,8 +28,6 @@ const RolesManagement = () => {
   const [selectedRole, setSelectedRole] = useState<Role | null>(null);
   const navigate = useNavigate();
 
-  const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001';
-
   useEffect(() => {
     fetchRoles();
     fetchUsers();
@@ -43,9 +41,7 @@ const RolesManagement = () => {
         return;
       }
 
-      const response = await axios.get(`${API_URL}/api/roles`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+      const response = await api.get('/roles');
 
       setRoles(response.data);
       setLoading(false);
@@ -61,10 +57,7 @@ const RolesManagement = () => {
 
   const fetchUsers = async () => {
     try {
-      const token = localStorage.getItem('token');
-      const response = await axios.get(`${API_URL}/api/admin/users`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+      const response = await api.get('/admin/users');
 
       setUsers(response.data);
     } catch (err: any) {
@@ -74,12 +67,7 @@ const RolesManagement = () => {
 
   const changeUserRole = async (userId: number, newRole: string) => {
     try {
-      const token = localStorage.getItem('token');
-      await axios.put(
-        `${API_URL}/api/admin/users/${userId}`,
-        { role: newRole },
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
+      await api.put(`/admin/users/${userId}`, { role: newRole });
 
       setSuccess(`Роль пользователя успешно изменена на "${newRole}"`);
       fetchUsers();
