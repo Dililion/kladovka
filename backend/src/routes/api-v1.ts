@@ -1,6 +1,6 @@
 import { Router, Request, Response } from 'express';
-import { apiAuth } from '../middleware/apiAuth';
-import { pool } from '../config/database';
+import { apiAuth } from '../middleware/apiAuth.js';
+import { pool } from '../config/database.js';
 
 const router = Router();
 

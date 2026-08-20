@@ -1,7 +1,7 @@
 import { Router, Request, Response } from 'express';
-import { authMiddleware } from '../middleware/auth';
-import { pool } from '../config/database';
-import { generateApiKey, hashApiKey, getKeyPrefix } from '../middleware/apiAuth';
+import { authMiddleware } from '../middleware/auth.js';
+import { pool } from '../config/database.js';
+import { generateApiKey, hashApiKey, getKeyPrefix } from '../middleware/apiAuth.js';
 
 const router = Router();
 
